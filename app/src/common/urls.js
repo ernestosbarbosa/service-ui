@@ -60,6 +60,7 @@ export const URLS = {
   debug: (activeProject) => `${urlBase}${activeProject}/launch/mode`,
 
   launch: (activeProject, id) => `${urlBase}${activeProject}/launch/${id}`,
+  launchStatus: (activeProject, id) => `${urlBase}${activeProject}/launch/status?ids=${id}`,
   launchAttributeKeysSearch: (activeProject) =>
     `${urlBase}${activeProject}/launch/attribute/keys?filter.cnt.attributeKey=`,
   launchAttributeValuesSearch: (activeProject, key = '') =>

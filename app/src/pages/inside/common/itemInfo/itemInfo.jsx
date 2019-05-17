@@ -13,6 +13,7 @@ import {
   activeProjectRoleSelector,
   userAccountRoleSelector,
   userIdSelector,
+  activeProjectSelector,
 } from 'controllers/user';
 import { levelSelector, launchSelector } from 'controllers/testItem';
 import { MarkdownViewer } from 'components/main/markdown';
@@ -45,6 +46,7 @@ const messages = defineMessages({
   userAccountRole: userAccountRoleSelector(state),
   userProjectRole: activeProjectRoleSelector(state),
   userId: userIdSelector(state),
+  activeProject: activeProjectSelector(state),
   isStepLevel: levelSelector(state) === LEVEL_STEP,
   launch: launchSelector(state),
 }))
@@ -58,6 +60,7 @@ export class ItemInfo extends Component {
     userProjectRole: PropTypes.string,
     userAccountRole: PropTypes.string.isRequired,
     userId: PropTypes.string,
+    activeProject: PropTypes.string,
     isStepLevel: PropTypes.bool,
     launch: PropTypes.object,
     editDisabled: PropTypes.bool,
@@ -79,6 +82,7 @@ export class ItemInfo extends Component {
       onOwnerClick: () => {},
     },
     userId: '',
+    activeProject: '',
     userProjectRole: '',
     isStepLevel: false,
     editDisabled: false,
@@ -127,6 +131,7 @@ export class ItemInfo extends Component {
       userProjectRole,
       userAccountRole,
       userId,
+      activeProject,
       isStepLevel,
       launch: launchFromProps,
       tracking,
@@ -172,6 +177,8 @@ export class ItemInfo extends Component {
                 type={value.type}
                 status={value.status}
                 itemNumber={value.number}
+                id={value.id}
+                activeProject={activeProject}
                 timing={{
                   start: value.startTime,
                   end: value.endTime,
