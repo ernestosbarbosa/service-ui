@@ -25,9 +25,11 @@ import { connect } from 'react-redux';
 import { Component } from 'react';
 import { CHART_MODES, MODES_VALUES } from 'common/constants/chartModes';
 import { Legend } from 'components/widgets/charts/common/legend/legend';
+import { statisticsLinkSelector } from 'controllers/testItem';
 import { activeProjectSelector } from 'controllers/user';
 import { TEST_ITEM_PAGE } from 'controllers/pages';
 import { ALL } from 'common/constants/reservedFilterIds';
+import * as STATUSES from 'common/constants/testStatuses';
 import styles from './investigatedTrendChart.scss';
 import { C3Chart } from '../common/c3chart';
 import { getTimelineConfig } from './timelineConfig';
@@ -40,6 +42,9 @@ const cx = classNames.bind(styles);
 @connect(
   (state) => ({
     projectId: activeProjectSelector(state),
+    statisticsLink: statisticsLinkSelector(state, {
+      statuses: [STATUSES.PASSED, STATUSES.FAILED, STATUSES.SKIPPED, STATUSES.INTERRUPTED],
+    }),
   }),
   {
     navigate: (linkAction) => linkAction,
@@ -51,6 +56,7 @@ export class InvestigatedTrendChart extends Component {
     navigate: PropTypes.func.isRequired,
     projectId: PropTypes.string.isRequired,
     widget: PropTypes.object.isRequired,
+    statisticsLink: PropTypes.object.isRequired,
     isPreview: PropTypes.bool,
     container: PropTypes.instanceOf(Element).isRequired,
     observer: PropTypes.object,
@@ -79,16 +85,14 @@ export class InvestigatedTrendChart extends Component {
       this.props.observer.unsubscribe('widgetResized', this.resizeChart);
   }
 
-  onChartClick = () => {
-    const { projectId } = this.props;
+  onChartClick = (data) => {
+    const { widget, statisticsLink } = this.props;
+    const id = this.isTimeline
+      ? widget.appliedFilters[data.index].id
+      : widget.content.result[data.index].id;
+    const defaultParams = this.getDefaultLinkParams(id);
 
-    this.props.navigate({
-      type: TEST_ITEM_PAGE,
-      payload: {
-        projectId,
-        filterId: ALL,
-      },
-    });
+    this.props.navigate(Object.assign(statisticsLink, defaultParams));
   };
 
   onChartCreated = (chart, element) => {
@@ -113,6 +117,15 @@ export class InvestigatedTrendChart extends Component {
   onLegendClick = (id) => {
     this.chart.toggle(id);
   };
+
+  getDefaultLinkParams = (testItemIds) => ({
+    payload: {
+      projectId: this.props.projectId,
+      filterId: ALL,
+      testItemIds,
+    },
+    type: TEST_ITEM_PAGE,
+  });
 
   getCoords = ({ pageX, pageY }) => {
     this.x = pageX;
