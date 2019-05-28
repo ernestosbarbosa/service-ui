@@ -81,7 +81,7 @@ define(function (require) {
             defaultAccountRole: 'USER',
             accountRolesEnum: { user: 'USER', administrator: 'ADMINISTRATOR' },
             accountTypesEnum: { internal: 'INTERNAL' },
-            btsEnum: { jira: 'JIRA', tfs: 'TFS', rally: 'RALLY' },
+            btsEnum: { jira: 'JIRA', tfs: 'TFS', rally: 'RALLY', vsts: 'VSTS' },
             breadcrumbMode: { expanded: 'expanded' },
             commentAnchor: '',
 
@@ -246,8 +246,9 @@ define(function (require) {
                 btsList: [
                     // {name: 'NONE', value: 'NONE'},
                     { name: 'JIRA', value: 'JIRA' },
-                    { name: 'RALLY', value: 'RALLY' }// ,
+                    { name: 'RALLY', value: 'RALLY' },
                     // {name: 'TFS', value: 'TFS'}
+                    { name: 'VSTS', value: 'VSTS' }
                 ],
                 btsJIRA: {
                     multiple: true,
@@ -288,6 +289,16 @@ define(function (require) {
                     authorizationType: [
                         { name: text.ui.APIKEY, value: 'APIKEY' }
                         // { name: text.ui.OAUTH, value: "OAUTH" }
+                    ],
+                    ticketType: [
+                        { name: 'BUG', value: 'BUG' }
+                    ],
+                    disabledForEdit: [],
+                    canUseRPAuthorization: false
+                },
+                btsVSTS: {
+                    authorizationType: [
+                        { name: text.ui.APIKEY, value: 'APIKEY' }
                     ],
                     ticketType: [
                         { name: 'BUG', value: 'BUG' }
