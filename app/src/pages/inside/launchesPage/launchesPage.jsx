@@ -214,7 +214,20 @@ export class LaunchesPage extends Component {
     deleteItemsAction: () => {},
   };
 
+  componentDidUpdate() {
+    clearInterval(this.intervalId);
+
+    this.arrIdLaunchInProgress = this.props.launches
+      .filter((item) => item.status === 'IN_PROGRESS')
+      .map((item) => item.id);
+
+    if (this.arrIdLaunchInProgress.length) {
+      this.intervalId = setInterval(() => this.fetchLaunchStatus(this.arrIdLaunchInProgress), 5000);
+    }
+  }
+
   componentWillUnmount() {
+    clearInterval(this.intervalId);
     this.props.unselectAllLaunchesAction();
   }
 
@@ -332,6 +345,22 @@ export class LaunchesPage extends Component {
     const launches = eventData && eventData.id ? [eventData] : this.props.selectedLaunches;
     this.props.forceFinishLaunchesAction(launches, {
       fetchFunc: this.unselectAndFetchLaunches,
+    });
+  };
+
+  fetchLaunchStatus = (arrIdLaunchInProgress) => {
+    if (!this.arrIdLaunchInProgress.length) {
+      clearInterval(this.intervalId);
+      return;
+    }
+
+    fetch(URLS.launchStatus(this.props.activeProject, arrIdLaunchInProgress), {
+      method: 'get',
+    }).then((objLaunchWithStatus) => {
+      this.arrIdLaunchInProgress = this.arrIdLaunchInProgress.filter(
+        (item) => objLaunchWithStatus[item] === 'IN_PROGRESS',
+      );
+      // todo update status, add notification on just finished launch over 'Refresh' button
     });
   };
 

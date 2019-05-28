@@ -22,8 +22,7 @@
 import React, { Component } from 'react';
 import classNames from 'classnames/bind';
 import Parser from 'html-react-parser';
-import { approximateTimeFormat, dateFormat, getDuration, fetch } from 'common/utils';
-import { URLS } from 'common/urls';
+import { approximateTimeFormat, dateFormat, getDuration } from 'common/utils';
 import { defineMessages, injectIntl, intlShape } from 'react-intl';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -83,25 +82,13 @@ export class DurationBlock extends Component {
       approxTime: PropTypes.number,
     }).isRequired,
     status: PropTypes.string,
-    id: PropTypes.number,
-    activeProject: PropTypes.string,
     itemNumber: PropTypes.number,
   };
   static defaultProps = {
     type: '',
     status: '',
-    id: null,
-    activeProject: '',
     itemNumber: null,
   };
-
-  componentDidMount() {
-    this.intervalId = setInterval(() => this.fetchLaunch(this.props.id), 5000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.intervalId);
-  }
 
   getStatusTitle = () => {
     const { formatMessage } = this.props.intl;
@@ -140,24 +127,6 @@ export class DurationBlock extends Component {
   getApproximateTime = () => {
     const approxTime = Math.round(this.props.timing.approxTime);
     return Math.round((this.props.timing.start + approxTime - moment().unix() * 1000) / 1000);
-  };
-
-  fetchLaunch = (id) => {
-    if (!this.isInProgress()) {
-      clearInterval(this.intervalId);
-      return;
-    }
-
-    const { activeProject } = this.props;
-
-    fetch(URLS.launchStatus(activeProject, id), {
-      method: 'get',
-    }).then((launchInProgress) => {
-      if (!launchInProgress[id] || launchInProgress[id] !== 'IN_PROGRESS') {
-        // todo update status, add notification on just finished launch over 'Refresh' button
-        clearInterval(this.intervalId);
-      }
-    });
   };
 
   isInvalidDuration = () =>
